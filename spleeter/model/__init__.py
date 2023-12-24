@@ -199,8 +199,7 @@ class EstimatorSpecBuilder(object):
         """
 
         input_tensor = self.spectrogram_feature
-        model = self._params.get("model", None)
-        if model is not None:
+        if (model := self._params.get("model", None)) is not None:
             model_type = model.get("type", self.DEFAULT_MODEL)
         else:
             model_type = self.DEFAULT_MODEL
@@ -222,8 +221,7 @@ class EstimatorSpecBuilder(object):
         :returns: tensorflow (loss, metrics) tuple.
         """
         output_dict = self.model_outputs
-        loss_type = self._params.get("loss_type", self.L1_MASK)
-        if loss_type == self.L1_MASK:
+        if (loss_type := self._params.get("loss_type", self.L1_MASK)) == self.L1_MASK:
             losses = {
                 name: tf.reduce_mean(tf.abs(output - labels[name]))
                 for name, output in output_dict.items()
@@ -251,8 +249,7 @@ class EstimatorSpecBuilder(object):
 
         :returns: Optimizer instance from internal configuration.
         """
-        name = self._params.get("optimizer")
-        if name == self.ADADELTA:
+        if (name := self._params.get("optimizer")) == self.ADADELTA:
             return tf.compat.v1.train.AdadeltaOptimizer()
         rate = self._params["learning_rate"]
         if name == self.SGD:
@@ -408,10 +405,9 @@ class EstimatorSpecBuilder(object):
         :returns: extended mask
         :raise ValueError: If invalid mask_extension parameter is set.
         """
-        extension = self._params["mask_extension"]
         # Extend with average
         # (dispatch according to energy in the processed band)
-        if extension == "average":
+        if (extension := self._params["mask_extension"]) == "average":
             extension_row = tf.reduce_mean(mask, axis=2, keepdims=True)
         # Extend with 0
         # (avoid extension artifacts but not conservative separation)
